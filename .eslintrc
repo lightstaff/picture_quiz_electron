@@ -1,0 +1,34 @@
+{
+  "parser": "babel-eslint",
+  "extends": "airbnb",
+  "globals": {
+    "__DEV__": true
+  },
+  "env": {
+    "browser": true
+  },
+  "rules": {
+    "max-len": [
+      "error",
+      120
+    ],
+    "no-confusing-arrow": 0,
+    "no-constant-condition": [
+      "error",
+      {
+        "checkLoops": false
+      }
+    ],
+    "yoda": 0,
+    "jsx-quotes": [
+      2,
+      "prefer-double"
+    ],
+    "react/forbid-prop-types": [
+      "off"
+    ],
+    "react/require-extension": [
+      0
+    ]
+  }
+}
