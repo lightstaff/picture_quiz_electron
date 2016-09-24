@@ -2,6 +2,7 @@
  * Created by Lightstaff on 2016/09/22.
  */
 
+import { range } from 'lodash';
 import { List, Map } from 'immutable';
 import { handleActions } from 'redux-actions';
 
@@ -13,21 +14,21 @@ export default handleActions({
     const column = action.payload.column;
     const rows = [];
     let num = 1;
-    for (let i = 1; i <= row; i += 1) {
+    range(row).map(i => {
       const columns = [];
-      for (let j = 1; j <= column; j += 1) {
+      range(column).map(j => {
         columns.push(new Map({
           columnIndex: j,
           isOpen: false,
           number: num,
         }));
         num += 1;
-      }
+      });
       rows.push(new Map({
         rowIndex: i,
         columns: new List(columns),
       }));
-    }
+    });
     return new List(rows);
   },
   RESET_PANELS: state => state.map(row => row.update('columns', columns =>

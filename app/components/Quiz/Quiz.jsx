@@ -5,14 +5,15 @@
 import { Map } from 'immutable';
 import React, { Component, PropTypes } from 'react';
 import IconButton from 'material-ui/IconButton';
-import FontIcon from 'material-ui/FontIcon';
+import KeyboardArrowLeftIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
+import KeyboardArrowRightIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
 import * as muiColors from 'material-ui/styles/colors';
 
 import QuizPanel from './QuizPanel.jsx';
 
 import cssStyles from './Quiz.css';
 
-class Quiz extends Component {
+export default class Quiz extends Component {
   static propTypes = {
     files: PropTypes.object.isRequired,
     panels: PropTypes.object.isRequired,
@@ -23,43 +24,48 @@ class Quiz extends Component {
 
   constructor(props) {
     super(props);
+    const { files } = props;
     this.state = {
       indexes: new Map({
         current: 0,
-        max: props.files.get('items').size - 1,
+        max: files.get('items').size - 1,
       }),
     };
   }
 
   componentDidMount() {
+    const { setHeaderText } = this.props;
     const { indexes } = this.state;
-    this.props.setHeaderText(`第${indexes.get('current') + 1}問`);
+    setHeaderText(`第${indexes.get('current') + 1}問`);
   }
 
   handleNextTouchTap = async() => {
+    const { resetPanels, setHeaderText } = this.props;
     const { indexes } = this.state;
     if (indexes.get('current') < indexes.get('max')) {
+      resetPanels();
       await this.setState({
         indexes: indexes.update('current', current => current + 1),
       });
-      this.props.resetPanels();
-      this.props.setHeaderText(`第${this.state.indexes.get('current') + 1}問`);
+      setHeaderText(`第${this.state.indexes.get('current') + 1}問`);
     }
   };
 
   handlePrevTouchTap = async() => {
+    const { resetPanels, setHeaderText } = this.props;
     const { indexes } = this.state;
     if (0 < indexes.get('current')) {
+      resetPanels();
       await this.setState({
         indexes: indexes.update('current', current => current - 1),
       });
-      this.props.resetPanels();
-      this.props.setHeaderText(`第${this.state.indexes.get('current') + 1}問`);
+      setHeaderText(`第${this.state.indexes.get('current') + 1}問`);
     }
   };
 
   handlePanelTouchTap = (indexPath) => {
-    this.props.togglePanel(indexPath);
+    const { togglePanel } = this.props;
+    togglePanel(indexPath);
   };
 
   render() {
@@ -77,13 +83,10 @@ class Quiz extends Component {
               onTouchTap={this.handlePrevTouchTap}
               disabled={!canPrev}
             >
-              <FontIcon
-                className="material-icons"
+              <KeyboardArrowLeftIcon
                 color={muiColors.teal500}
                 hoverColor={muiColors.tealA200}
-              >
-                keyboard_arrow_left
-              </FontIcon>
+              />
             </IconButton>
           </div>
           <div className={cssStyles.main_center}>
@@ -122,13 +125,10 @@ class Quiz extends Component {
               onTouchTap={this.handleNextTouchTap}
               disabled={!canNext}
             >
-              <FontIcon
-                className="material-icons"
+              <KeyboardArrowRightIcon
                 color={muiColors.teal500}
                 hoverColor={muiColors.tealA200}
-              >
-                keyboard_arrow_right
-              </FontIcon>
+              />
             </IconButton>
           </div>
         </div>
@@ -136,5 +136,3 @@ class Quiz extends Component {
     );
   }
 }
-
-export default Quiz;

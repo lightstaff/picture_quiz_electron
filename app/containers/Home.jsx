@@ -2,7 +2,7 @@
  * Created by Lightstaff on 2016/09/22.
  */
 
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -11,37 +11,34 @@ import * as fetchLocalFilesActions from '../actions/fetchLocalFiles';
 import * as panelsActions from '../actions/panels';
 import Home from '../components/Home/Home.jsx';
 
-const HomeContainer = ({
-  files,
-  setHeaderText,
-  requestFetchLocalFiles,
-  makePanels,
-}) => (
-  <Home
-    files={files}
-    setHeaderText={setHeaderText}
-    requestFetchLocalFiles={requestFetchLocalFiles}
-    makePanels={makePanels}
-  />
-);
-
-HomeContainer.propTypes = {
-  files: PropTypes.object.isRequired,
-  setHeaderText: PropTypes.func.isRequired,
-  requestFetchLocalFiles: PropTypes.func.isRequired,
-  makePanels: PropTypes.func.isRequired,
-};
-
 const mapStateToProps = state => ({
   files: state.files,
 });
 
 const mapDispatchToProps = dispatch => ({
-  ...bindActionCreators({
-    ...appActions,
-    ...fetchLocalFilesActions,
-    ...panelsActions,
-  }, dispatch),
+  appActions: bindActionCreators(appActions, dispatch),
+  fetchLocalFilesActions: bindActionCreators(fetchLocalFilesActions, dispatch),
+  panelsActions: bindActionCreators(panelsActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomeContainer);
+@connect(mapStateToProps, mapDispatchToProps)
+export default class HomeContainer extends Component {
+  static propTypes = {
+    files: PropTypes.object.isRequired,
+    appActions: PropTypes.object.isRequired,
+    fetchLocalFilesActions: PropTypes.object.isRequired,
+    panelsActions: PropTypes.object.isRequired,
+  };
+
+  render() {
+    const { files, appActions, fetchLocalFilesActions, panelsActions } = this.props;
+    return (
+      <Home
+        files={files}
+        setHeaderText={appActions.setHeaderText}
+        requestFetchLocalFiles={fetchLocalFilesActions.requestFetchLocalFiles}
+        makePanels={panelsActions.makePanels}
+      />
+    )
+  }
+}

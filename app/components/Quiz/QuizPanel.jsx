@@ -2,39 +2,45 @@
  * Created by Lightstaff on 2016/09/23.
  */
 
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
+import classNames from 'classnames';
 
 import cssStyles from './QuizPanel.css';
 
-const QuizPanel = ({ indexPath, number, isOpen, onTouchTap }) => {
-  const handleTouchTap = () => onTouchTap(indexPath);
-  const styles = {
-    container: {
-      backgroundColor: isOpen ? 'rgba(0, 0, 0, 0)' : 'rgba(98, 0, 234, 1.0)',
-    },
-    button: {
-      color: isOpen ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 1)',
-      borderColor: isOpen ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 1)',
-    },
+export default class QuizPanel extends Component {
+  static propTypes = {
+    indexPath: PropTypes.object.isRequired,
+    number: PropTypes.number.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+    onTouchTap: PropTypes.func.isRequired,
   };
-  return (
-    <div className={cssStyles.container} style={styles.container} >
-      <button
-        className={cssStyles.button}
-        style={styles.button}
-        onTouchTap={handleTouchTap}
+
+  handleTouchTap = () => {
+    const { indexPath, onTouchTap } = this.props;
+    onTouchTap(indexPath);
+  };
+
+  render() {
+    const { number, isOpen } = this.props;
+    const containerClass = classNames(cssStyles.container, {
+      [cssStyles.container_open]: isOpen,
+      [cssStyles.container_close]: !isOpen,
+    });
+    const buttonClass = classNames(cssStyles.button, {
+      [cssStyles.button_open]: isOpen,
+      [cssStyles.button_close]: !isOpen,
+    });
+    return (
+      <div
+        className={containerClass}
       >
-        {number}
-      </button>
-    </div>
-  );
-};
-
-QuizPanel.propTypes = {
-  indexPath: PropTypes.object.isRequired,
-  number: PropTypes.number.isRequired,
-  isOpen: PropTypes.bool.isRequired,
-  onTouchTap: PropTypes.func.isRequired,
-};
-
-export default QuizPanel;
+        <button
+          className={buttonClass}
+          onTouchTap={this.handleTouchTap}
+        >
+          {number}
+        </button>
+      </div>
+    );
+  }
+}

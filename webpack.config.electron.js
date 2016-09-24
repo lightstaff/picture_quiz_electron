@@ -47,7 +47,6 @@ export default merge(baseConfig, {
   },
 
   externals: [
-    'material-design-icons',
     'source-map-support',
   ],
 });

@@ -17,7 +17,7 @@ import {
   StepContent,
 } from 'material-ui/Stepper';
 import { List, ListItem } from 'material-ui/List';
-import FontIcon from 'material-ui/FontIcon';
+import PhotoCameraIcon from 'material-ui/svg-icons/image/photo-camera';
 
 import cssStyles from './Home.css';
 
@@ -37,7 +37,7 @@ const muiStyles = {
   },
 };
 
-class Home extends Component {
+export default class Home extends Component {
   static propTypes = {
     files: PropTypes.object.isRequired,
     setHeaderText: PropTypes.func.isRequired,
@@ -58,7 +58,8 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    this.props.setHeaderText('HOME');
+    const { setHeaderText } = this.props;
+    setHeaderText('HOME');
   }
 
   handleRowChange = async(e) => {
@@ -85,14 +86,16 @@ class Home extends Component {
   };
 
   handleRowColumnCommitTouchTap = async() => {
+    const { makePanels } = this.props;
     const { data } = this.state;
-    this.props.makePanels(data.get('panelRow'), data.get('panelColumn'));
+    makePanels(data.get('panelRow'), data.get('panelColumn'));
     await this.setState({
       data: data.update('stepIndex', stepIndex => stepIndex + 1),
     });
   };
 
   handleReadFilesTouchTap = () => {
+    const { requestFetchLocalFiles } = this.props;
     const options = {
       title: 'フォルダを選んでください',
       defaultPath: app.getPath('userDesktop'),
@@ -100,7 +103,7 @@ class Home extends Component {
     };
     dialog.showOpenDialog(options, (folder) => {
       if (0 < folder.length) {
-        this.props.requestFetchLocalFiles(folder[0], '.jpg');
+        requestFetchLocalFiles(folder[0], '.jpg');
       }
     });
   };
@@ -124,9 +127,6 @@ class Home extends Component {
   render() {
     const { files } = this.props;
     const { data } = this.state;
-    const listIcon = (
-      <FontIcon className="material-icons" >photo_camera</FontIcon>
-    );
     return (
       <div className={cssStyles.container} >
         <div className={cssStyles.main_box} >
@@ -181,7 +181,7 @@ class Home extends Component {
                           { files.get('items').map((item, index) => (
                             <ListItem
                               key={index}
-                              leftIcon={listIcon}
+                              leftIcon={<PhotoCameraIcon />}
                               primaryText={item.get('fileName')}
                             />
                           )) }
@@ -222,5 +222,3 @@ class Home extends Component {
     );
   }
 }
-
-export default Home;
