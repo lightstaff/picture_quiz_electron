@@ -7,7 +7,7 @@ Usege
 ---
 **始めに**
 ```shell
-$ git clone https://github.com/lightstaff/picture_quiz.git YourApp
+$ git clone https://github.com/lightstaff/picture_quiz_electron.git YourApp
 $ cd YourApp
 $ npm install
 ```
