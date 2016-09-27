@@ -24,6 +24,10 @@ $ npm package
 ```
 注:Windowsのみです
 
+ベース
+---
+https://github.com/chentsulin/electron-react-boilerplate.git
+
 License
 ---
 MIT
