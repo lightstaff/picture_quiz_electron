@@ -5,9 +5,10 @@
 import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 
+import BaseComponent from '../BaseComponent/BaseComponent.jsx';
 import cssStyles from './QuizPanel.css';
 
-export default class QuizPanel extends Component {
+export default class QuizPanel extends BaseComponent {
   static propTypes = {
     indexPath: PropTypes.object.isRequired,
     number: PropTypes.number.isRequired,

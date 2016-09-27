@@ -35,9 +35,9 @@ export default class HomeContainer extends Component {
     return (
       <Home
         files={files}
-        setHeaderText={appActions.setHeaderText}
-        requestFetchLocalFiles={fetchLocalFilesActions.requestFetchLocalFiles}
-        makePanels={panelsActions.makePanels}
+        appActions={appActions}
+        fetchLocalFilesActions={fetchLocalFilesActions}
+        panelsActions={panelsActions}
       />
     )
   }

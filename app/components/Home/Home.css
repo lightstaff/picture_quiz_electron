@@ -21,6 +21,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
+  padding: 12px;
 }
 
 .step_two {
@@ -28,6 +29,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
+  padding: 12px;
 }
 
 .read_files {
@@ -38,5 +40,5 @@
 }
 
 .start_box {
-  margin: 12px;
+  margin: 24px;
 }

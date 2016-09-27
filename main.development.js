@@ -42,6 +42,7 @@ app.on('ready', async() => {
     show: false,
     width,
     height,
+    frame: false,
   });
 
   mainWindow.loadURL(`file://${__dirname}/app/app.html`);
@@ -84,7 +85,7 @@ app.on('ready', async() => {
     },
     {
       label: '&表示',
-      submenu: (process.env.NODE_ENV === 'development') ? [
+      submenu: [
         {
           label: '&Reload',
           accelerator: 'Ctrl+R',
@@ -106,17 +107,10 @@ app.on('ready', async() => {
             mainWindow.toggleDevTools();
           },
         },
-      ] : [
-        {
-          label: '&全画面切替',
-          accelerator: 'F11',
-          click() {
-            mainWindow.setFullScreen(!mainWindow.isFullScreen());
-          },
-        },
       ],
     },
   ];
   menu = Menu.buildFromTemplate(template);
-  mainWindow.setMenu(menu);
+  mainWindow.setMenu(process.env.NODE_ENV === 'production' ? menu : null);
+  mainWindow.setFullScreen(true);
 });

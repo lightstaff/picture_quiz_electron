@@ -8,7 +8,7 @@ import { handleActions } from 'redux-actions';
 
 const initialState = new List();
 
-export default handleActions({
+const actions = handleActions({
   MAKE_PANELS: (state, action) => {
     const row = action.payload.row;
     const column = action.payload.column;
@@ -31,8 +31,10 @@ export default handleActions({
     });
     return new List(rows);
   },
-  RESET_PANELS: state => state.map(row => row.update('columns', columns =>
+  CLOSE_PANELS: state => state.map(row => row.update('columns', columns =>
     columns.map(column => column.update('isOpen', () => false)))),
+  OPEN_PANELS: state => state.map(row => row.update('columns', columns =>
+    columns.map(column => column.update('isOpen', () => true)))),
   TOGGLE_PANEL: (state, action) => {
     const rowIndex = action.payload.rowIndex;
     const columnIndex = action.payload.columnIndex;
@@ -49,3 +51,5 @@ export default handleActions({
     });
   },
 }, initialState);
+
+export default actions;

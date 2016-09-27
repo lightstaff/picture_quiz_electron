@@ -9,6 +9,8 @@ const initialState = new Map({
   headerText: '',
 });
 
-export default handleActions({
+const actions = handleActions({
   SET_HEADER_TEXT: (state, action) => state.update('headerText', () => action.payload),
 }, initialState);
+
+export default actions;

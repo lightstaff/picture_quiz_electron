@@ -30,14 +30,9 @@ export default class QuizContainer extends Component {
   };
 
   render() {
-    const { files, panels, appActions, panelsActions } = this.props;
     return (
       <Quiz
-        files={files}
-        panels={panels}
-        setHeaderText={appActions.setHeaderText}
-        resetPanels={panelsActions.resetPanels}
-        togglePanel={panelsActions.togglePanel}
+        {...this.props}
       />
     );
   }

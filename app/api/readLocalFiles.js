@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 
-export default function ({ folder, queryExt }) {
+const readLocalFiles = ({ folder, queryExt }) => {
   return new Promise((resolve, reject) => {
     fs.readdir(folder, (err, files) => {
       if (err) {
@@ -28,4 +28,6 @@ export default function ({ folder, queryExt }) {
       return resolve(results);
     });
   });
-}
+};
+
+export default readLocalFiles;

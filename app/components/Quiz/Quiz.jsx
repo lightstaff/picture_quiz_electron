@@ -9,17 +9,16 @@ import KeyboardArrowLeftIcon from 'material-ui/svg-icons/hardware/keyboard-arrow
 import KeyboardArrowRightIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
 import * as muiColors from 'material-ui/styles/colors';
 
+import BaseComponent from '../BaseComponent/BaseComponent.jsx';
 import QuizPanel from './QuizPanel.jsx';
-
 import cssStyles from './Quiz.css';
 
-export default class Quiz extends Component {
+export default class Quiz extends BaseComponent {
   static propTypes = {
     files: PropTypes.object.isRequired,
     panels: PropTypes.object.isRequired,
-    setHeaderText: PropTypes.func.isRequired,
-    resetPanels: PropTypes.func.isRequired,
-    togglePanel: PropTypes.func.isRequired,
+    appActions: PropTypes.object.isRequired,
+    panelsActions: PropTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -33,39 +32,44 @@ export default class Quiz extends Component {
     };
   }
 
+  componentWillMount() {
+    const { panelsActions } = this.props;
+    panelsActions.closePanels();
+  }
+
   componentDidMount() {
-    const { setHeaderText } = this.props;
+    const { appActions } = this.props;
     const { indexes } = this.state;
-    setHeaderText(`第${indexes.get('current') + 1}問`);
+    appActions.setHeaderText(`第${indexes.get('current') + 1}問`);
   }
 
   handleNextTouchTap = async() => {
-    const { resetPanels, setHeaderText } = this.props;
+    const { appActions, panelsActions } = this.props;
     const { indexes } = this.state;
     if (indexes.get('current') < indexes.get('max')) {
-      resetPanels();
+      panelsActions.closePanels();
       await this.setState({
         indexes: indexes.update('current', current => current + 1),
       });
-      setHeaderText(`第${this.state.indexes.get('current') + 1}問`);
+      appActions.setHeaderText(`第${this.state.indexes.get('current') + 1}問`);
     }
   };
 
   handlePrevTouchTap = async() => {
-    const { resetPanels, setHeaderText } = this.props;
+    const { appActions, panelsActions } = this.props;
     const { indexes } = this.state;
     if (0 < indexes.get('current')) {
-      resetPanels();
+      panelsActions.closePanels();
       await this.setState({
         indexes: indexes.update('current', current => current - 1),
       });
-      setHeaderText(`第${this.state.indexes.get('current') + 1}問`);
+      appActions.setHeaderText(`第${this.state.indexes.get('current') + 1}問`);
     }
   };
 
   handlePanelTouchTap = (indexPath) => {
-    const { togglePanel } = this.props;
-    togglePanel(indexPath);
+    const { panelsActions } = this.props;
+    panelsActions.togglePanel(indexPath);
   };
 
   render() {

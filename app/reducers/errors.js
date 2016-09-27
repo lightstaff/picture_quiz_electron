@@ -9,7 +9,10 @@ const initialState = new Map({
   error: undefined,
 });
 
-export default handleActions({
+const actions = handleActions({
   ADD_ERROR: (state, action) => state.update('error', () => action.payload),
   REMOVE_ERROR: () => initialState,
 }, initialState);
+
+export default actions;
+

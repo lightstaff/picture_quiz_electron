@@ -11,7 +11,7 @@ const initialState = new Map({
   items: new List(),
 });
 
-export default handleActions({
+const actions = handleActions({
   REQUEST_FETCH_LOCALFILES: (state, action) => state.update('folder', () => action.payload.folder)
     .update('queryExt', () => action.payload.queryExt)
     .update('items', () => new List()),
@@ -19,3 +19,5 @@ export default handleActions({
     immutable.fromJS(action.payload) : new List()),
   FAILURE_FETCH_LOCALFILES: () => initialState,
 }, initialState);
+
+export default actions;

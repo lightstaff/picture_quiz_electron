@@ -19,6 +19,7 @@ import {
 import { List, ListItem } from 'material-ui/List';
 import PhotoCameraIcon from 'material-ui/svg-icons/image/photo-camera';
 
+import BaseComponent from '../BaseComponent/BaseComponent.jsx';
 import cssStyles from './Home.css';
 
 const remote = electron.remote;
@@ -37,12 +38,12 @@ const muiStyles = {
   },
 };
 
-export default class Home extends Component {
+export default class Home extends BaseComponent {
   static propTypes = {
     files: PropTypes.object.isRequired,
-    setHeaderText: PropTypes.func.isRequired,
-    requestFetchLocalFiles: PropTypes.func.isRequired,
-    makePanels: PropTypes.func.isRequired,
+    appActions: PropTypes.object.isRequired,
+    fetchLocalFilesActions: PropTypes.object.isRequired,
+    panelsActions: PropTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -58,8 +59,8 @@ export default class Home extends Component {
   }
 
   componentDidMount() {
-    const { setHeaderText } = this.props;
-    setHeaderText('HOME');
+    const { appActions } = this.props;
+    appActions.setHeaderText('初期設定');
   }
 
   handleRowChange = async(e) => {
@@ -86,16 +87,16 @@ export default class Home extends Component {
   };
 
   handleRowColumnCommitTouchTap = async() => {
-    const { makePanels } = this.props;
+    const { panelsActions } = this.props;
     const { data } = this.state;
-    makePanels(data.get('panelRow'), data.get('panelColumn'));
+    panelsActions.makePanels(data.get('panelRow'), data.get('panelColumn'));
     await this.setState({
       data: data.update('stepIndex', stepIndex => stepIndex + 1),
     });
   };
 
   handleReadFilesTouchTap = () => {
-    const { requestFetchLocalFiles } = this.props;
+    const { fetchLocalFilesActions } = this.props;
     const options = {
       title: 'フォルダを選んでください',
       defaultPath: app.getPath('userDesktop'),
@@ -103,7 +104,7 @@ export default class Home extends Component {
     };
     dialog.showOpenDialog(options, (folder) => {
       if (0 < folder.length) {
-        requestFetchLocalFiles(folder[0], '.jpg');
+        fetchLocalFilesActions.requestFetchLocalFiles(folder[0], '.jpg');
       }
     });
   };
@@ -135,19 +136,19 @@ export default class Home extends Component {
             orientation="vertical"
           >
             <Step>
-              <StepLabel>行列設定</StepLabel>
+              <StepLabel>行数と列数を設定してください</StepLabel>
               <StepContent>
                 <div className={cssStyles.step_one} >
                   <TextField
                     id={lodash.uniqueId('text_field_')}
-                    floatingLabelText="パネル列数"
+                    floatingLabelText="パネル行数"
                     floatingLabelFixed
                     defaultValue={data.get('panelRow')}
                     onChange={this.handleRowChange}
                   />
                   <TextField
                     id={lodash.uniqueId('text_field_')}
-                    floatingLabelText="パネル行数"
+                    floatingLabelText="パネル列数"
                     floatingLabelFixed
                     defaultValue={data.get('panelColumn')}
                     onChange={this.handleColumnChange}
@@ -164,19 +165,19 @@ export default class Home extends Component {
               </StepContent>
             </Step>
             <Step>
-              <StepLabel>ファイル選択</StepLabel>
+              <StepLabel>問題の写真が入っているフォルダを選択してください</StepLabel>
               <StepContent>
                 <div className={cssStyles.step_two} >
                   <div className={cssStyles.read_files} >
                     <FlatButton
-                      label="ファイル読込"
+                      label="フォルダ選択"
                       primary
                       onTouchTap={this.handleReadFilesTouchTap}
                     />
                     <span>...</span>
                     { 0 < files.get('items').size ? (
                       <div>
-                        <span>読み込まれたファイル</span>
+                        <span>読み込まれたファイル(この並び順で出題されます)</span>
                         <List>
                           { files.get('items').map((item, index) => (
                             <ListItem
