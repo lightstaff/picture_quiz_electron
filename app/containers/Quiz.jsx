@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 
 import * as appActions from '../actions/app';
 import * as panelsActions from '../actions/panels';
-import Quiz from '../components/Quiz/Quiz.jsx';
+import Pictures from '../components/Pictures/Pictures.jsx';
 
 const mapStateToProps = state => ({
   files: state.files,
@@ -31,7 +31,7 @@ export default class QuizContainer extends Component {
 
   render() {
     return (
-      <Quiz
+      <Pictures
         {...this.props}
       />
     );

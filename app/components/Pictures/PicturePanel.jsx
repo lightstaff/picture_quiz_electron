@@ -6,9 +6,9 @@ import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 
 import BaseComponent from '../BaseComponent/BaseComponent.jsx';
-import cssStyles from './QuizPanel.css';
+import cssStyles from './PicturePanel.css';
 
-export default class QuizPanel extends BaseComponent {
+export default class PicturePanel extends BaseComponent {
   static propTypes = {
     indexPath: PropTypes.object.isRequired,
     number: PropTypes.number.isRequired,

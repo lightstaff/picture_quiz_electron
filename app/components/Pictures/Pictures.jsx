@@ -10,10 +10,10 @@ import KeyboardArrowRightIcon from 'material-ui/svg-icons/hardware/keyboard-arro
 import * as muiColors from 'material-ui/styles/colors';
 
 import BaseComponent from '../BaseComponent/BaseComponent.jsx';
-import QuizPanel from './QuizPanel.jsx';
-import cssStyles from './Quiz.css';
+import PicturePanel from './PicturePanel.jsx';
+import cssStyles from './Pictures.css';
 
-export default class Quiz extends BaseComponent {
+export default class Pictures extends BaseComponent {
   static propTypes = {
     files: PropTypes.object.isRequired,
     panels: PropTypes.object.isRequired,
@@ -105,7 +105,7 @@ export default class Quiz extends BaseComponent {
                       className={cssStyles.panel_column}
                       key={column.get('columnIndex')}
                     >
-                      <QuizPanel
+                      <PicturePanel
                         indexPath={{
                           rowIndex: row.get('rowIndex'),
                           columnIndex: column.get('columnIndex'),
