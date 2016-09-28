@@ -3,11 +3,6 @@
   width: 100%;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: stretch;
-  align-content: stretch;
 }
 
 .header_box {
@@ -44,35 +39,34 @@
 
 .header_center h1 {
   color: white;
-}
-
-.main {
-  flex: 1;
-}
-
-.footer {
   margin: 0;
   padding: 0;
-  height: 24px;
-  line-height: 24px;
-  background-color: #212121;
-  display: flex;
-  flex-direction: row;
-  align-items:  center;
-  justify-content: space-around;
 }
 
-.footer a {
+.main_box {
+  height: 660px;
+  width: 100%;
+  margin: 0;
+  padding: 6px;
+}
+
+.footer_box {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #212121;
+  text-align: center;
+}
+
+.footer_box a {
+  margin-top: 2px;
   font-size: 12px;
   text-decoration: none;
   color: white;
 }
 
-.footer_button {
-  font-size: 12px;
-  border: none;
-  color: white;
-  outline: none;
-  background-color: transparent;
-  cursor: pointer;
+.progress_box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

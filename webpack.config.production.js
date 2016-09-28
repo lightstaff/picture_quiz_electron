@@ -11,9 +11,9 @@ import baseConfig from './webpack.config.base';
 export default merge(baseConfig, {
   devtool: 'cheap-module-source-map',
 
-  entry: [
-    './app/index',
-  ],
+  entry: {
+    main: './app/index',
+  },
 
   output: {
     publicPath: '../dist/',

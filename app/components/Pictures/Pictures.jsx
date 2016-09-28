@@ -15,56 +15,27 @@ import cssStyles from './Pictures.css';
 
 export default class Pictures extends BaseComponent {
   static propTypes = {
-    files: PropTypes.object.isRequired,
+    imgs: PropTypes.object.isRequired,
     panels: PropTypes.object.isRequired,
-    appActions: PropTypes.object.isRequired,
+    imgsActions: PropTypes.object.isRequired,
     panelsActions: PropTypes.object.isRequired,
   };
 
-  constructor(props) {
-    super(props);
-    const { files } = props;
-    this.state = {
-      indexes: new Map({
-        current: 0,
-        max: files.get('items').size - 1,
-      }),
-    };
-  }
-
-  componentWillMount() {
-    const { panelsActions } = this.props;
-    panelsActions.closePanels();
-  }
-
-  componentDidMount() {
-    const { appActions } = this.props;
-    const { indexes } = this.state;
-    appActions.setHeaderText(`第${indexes.get('current') + 1}問`);
-  }
-
-  handleNextTouchTap = async() => {
-    const { appActions, panelsActions } = this.props;
-    const { indexes } = this.state;
-    if (indexes.get('current') < indexes.get('max')) {
+  componentWillReceiveProps(nextProps) {
+    const { imgs, panelsActions } = this.props;
+    if (imgs.get('currentIndex') !== nextProps.imgs.get('currentIndex')) {
       panelsActions.closePanels();
-      await this.setState({
-        indexes: indexes.update('current', current => current + 1),
-      });
-      appActions.setHeaderText(`第${this.state.indexes.get('current') + 1}問`);
     }
+  }
+
+  handleNextTouchTap = () => {
+    const { imgsActions } = this.props;
+    imgsActions.nextImg();
   };
 
-  handlePrevTouchTap = async() => {
-    const { appActions, panelsActions } = this.props;
-    const { indexes } = this.state;
-    if (0 < indexes.get('current')) {
-      panelsActions.closePanels();
-      await this.setState({
-        indexes: indexes.update('current', current => current - 1),
-      });
-      appActions.setHeaderText(`第${this.state.indexes.get('current') + 1}問`);
-    }
+  handlePrevTouchTap = () => {
+    const { imgsActions } = this.props;
+    imgsActions.prevImg();
   };
 
   handlePanelTouchTap = (indexPath) => {
@@ -73,17 +44,16 @@ export default class Pictures extends BaseComponent {
   };
 
   render() {
-    const { files, panels } = this.props;
-    const { indexes } = this.state;
-    const imgPath = files.get('items').get(indexes.get('current')).get('path');
-    const canPrev = 0 < indexes.get('current');
-    const canNext = indexes.get('current') < indexes.get('max');
+    const { imgs, panels } = this.props;
+    const imgPath = imgs.get('items').get(imgs.get('currentIndex')).get('path');
+    const canPrev = 0 < imgs.get('currentIndex');
+    const canNext = imgs.get('currentIndex') < imgs.get('indexes');
     return (
       <div className={cssStyles.container}>
         <div className={cssStyles.main_box}>
           <div className={cssStyles.main_left}>
             <IconButton
-              tooltip="前の問題へ"
+              tooltip="前の写真へ"
               onTouchTap={this.handlePrevTouchTap}
               disabled={!canPrev}
             >
@@ -125,7 +95,7 @@ export default class Pictures extends BaseComponent {
           </div>
           <div className={cssStyles.main_right}>
             <IconButton
-              tooltip="次の問題へ"
+              tooltip="次の写真へ"
               onTouchTap={this.handleNextTouchTap}
               disabled={!canNext}
             >

@@ -16,11 +16,11 @@ import {
   StepLabel,
   StepContent,
 } from 'material-ui/Stepper';
-import { List, ListItem } from 'material-ui/List';
-import PhotoCameraIcon from 'material-ui/svg-icons/image/photo-camera';
 
 import BaseComponent from '../BaseComponent/BaseComponent.jsx';
 import cssStyles from './Home.css';
+
+const path = require('path');
 
 const remote = electron.remote;
 const dialog = remote.dialog;
@@ -39,28 +39,39 @@ const muiStyles = {
 };
 
 export default class Home extends BaseComponent {
+  static contextTypes = {
+    router: PropTypes.object.isRequired,
+  };
+
   static propTypes = {
-    files: PropTypes.object.isRequired,
+    imgs: PropTypes.object.isRequired,
+    pdf: PropTypes.object.isRequired,
     appActions: PropTypes.object.isRequired,
-    fetchLocalFilesActions: PropTypes.object.isRequired,
+    errorsActions: PropTypes.object.isRequired,
+    pdfActions: PropTypes.object.isRequired,
+    imgsActions: PropTypes.object.isRequired,
     panelsActions: PropTypes.object.isRequired,
   };
 
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
     this.state = {
       data: new Map({
         panelRow: 4,
         panelColumn: 4,
         stepIndex: 0,
         finished: false,
+        canCOMDialogOpen: true,
       }),
-    };
+    }
   }
 
   componentDidMount() {
-    const { appActions } = this.props;
+    const { appActions, imgsActions, pdfActions } = this.props;
     appActions.setHeaderText('初期設定');
+    appActions.stopGame();
+    imgsActions.resetImgs();
+    pdfActions.resetPdf();
   }
 
   handleRowChange = async(e) => {
@@ -95,22 +106,65 @@ export default class Home extends BaseComponent {
     });
   };
 
-  handleReadFilesTouchTap = () => {
-    const { fetchLocalFilesActions } = this.props;
+  handleSetPdfFileTouchTap = async() => {
+    const { errorsActions, pdfActions } = this.props;
+    const { data } = this.state;
+    const options = {
+      title: 'フォルダを選んでください',
+      defaultPath: app.getPath('userDesktop'),
+      properties: ['openFile'],
+    };
+    await this.setState({
+      data: data.update('canCOMDialogOpen', () => false),
+    });
+    dialog.showOpenDialog(options, (files) => {
+      if (0 < files.length) {
+        if (path.extname(files[0]) !== '.pdf') {
+          errorsActions.addError(new Error('選択されたファイルがPDFファイルではありません。'));
+          return;
+        }
+        pdfActions.setPdfPath(files[0]);
+      }
+      this.setState({
+        data: data.update('canCOMDialogOpen', () => true),
+      });
+    });
+  };
+
+  handleSetPdfFileCommitTouchTap = async() => {
+    const { pdfActions } = this.props;
+    const { data } = this.state;
+    pdfActions.requestFetchPdf();
+    await this.setState({
+      data: data.update('stepIndex', stepIndex => stepIndex + 1),
+    });
+  };
+
+  handleReadImgFilesTouchTap = async() => {
+    const { imgsActions } = this.props;
+    const { data } = this.state;
     const options = {
       title: 'フォルダを選んでください',
       defaultPath: app.getPath('userDesktop'),
       properties: ['openDirectory'],
     };
+    await this.setState({
+      data: data.update('canCOMDialogOpen', () => false),
+    });
     dialog.showOpenDialog(options, (folder) => {
       if (0 < folder.length) {
-        fetchLocalFilesActions.requestFetchLocalFiles(folder[0], '.jpg');
+        imgsActions.setImgsPath(folder[0]);
       }
+      this.setState({
+        data: data.update('canCOMDialogOpen', () => true),
+      });
     });
   };
 
   handleReadFilesCommitTouchTap = async() => {
+    const { imgsActions } = this.props;
     const { data } = this.state;
+    imgsActions.requestFetchImgs();
     await this.setState({
       data: data.update('stepIndex', stepIndex => stepIndex + 1)
         .update('finished', () => true),
@@ -125,12 +179,26 @@ export default class Home extends BaseComponent {
     });
   };
 
+  handleStartTouchTap = () => {
+    const { router } = this.context;
+    const { imgs, pdf, errorsActions } = this.props;
+    if (pdf.get('pdfDocument') === null) {
+      errorsActions.addError(new Error('PDFファイルが不正です。再度読み込んでください。'));
+      return;
+    }
+    if (imgs.get('items').size === 0) {
+      errorsActions.addError(new Error('写真フォルダにJPG/PNG形式のファイルがありません。'));
+      return;
+    }
+    router.push('/quiz');
+  };
+
   render() {
-    const { files } = this.props;
+    const { imgs, pdf } = this.props;
     const { data } = this.state;
     return (
-      <div className={cssStyles.container} >
-        <div className={cssStyles.main_box} >
+      <div className={cssStyles.container}>
+        <div className={cssStyles.main_box}>
           <Stepper
             activeStep={data.get('stepIndex')}
             orientation="vertical"
@@ -138,7 +206,7 @@ export default class Home extends BaseComponent {
             <Step>
               <StepLabel>行数と列数を設定してください</StepLabel>
               <StepContent>
-                <div className={cssStyles.step_one} >
+                <div className={cssStyles.step}>
                   <TextField
                     id={lodash.uniqueId('text_field_')}
                     floatingLabelText="パネル行数"
@@ -165,28 +233,59 @@ export default class Home extends BaseComponent {
               </StepContent>
             </Step>
             <Step>
-              <StepLabel>問題の写真が入っているフォルダを選択してください</StepLabel>
+              <StepLabel>クイズのPDFファイルを選択してください。</StepLabel>
               <StepContent>
-                <div className={cssStyles.step_two} >
-                  <div className={cssStyles.read_files} >
+                <div className={cssStyles.step}>
+                  <div>
+                    <div className={cssStyles.read_files}>
+                      <FlatButton
+                        label="ファイル選択"
+                        primary
+                        disabled={!data.get('canCOMDialogOpen')}
+                        onTouchTap={this.handleSetPdfFileTouchTap}
+                      />
+                      <span>...</span>
+                      { pdf.get('path') !== '' ? (
+                        <div>
+                          <span>選択されたファイル:</span>
+                          <span>{pdf.get('path')}</span>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div>
+                    <RaisedButton
+                      label="NEXT"
+                      primary
+                      style={muiStyles.buttonStyle}
+                      disabled={pdf.get('path') === ''}
+                      onTouchTap={this.handleSetPdfFileCommitTouchTap}
+                    />
+                    <FlatButton
+                      label="BACK"
+                      style={muiStyles.buttonStyle}
+                      onTouchTap={this.handleStepPrevTouchTap}
+                    />
+                  </div>
+                </div>
+              </StepContent>
+            </Step>
+            <Step>
+              <StepLabel>アタックチャンスの写真が入っているフォルダを選択してください</StepLabel>
+              <StepContent>
+                <div className={cssStyles.step}>
+                  <div className={cssStyles.read_files}>
                     <FlatButton
                       label="フォルダ選択"
                       primary
-                      onTouchTap={this.handleReadFilesTouchTap}
+                      disabled={!data.get('canCOMDialogOpen')}
+                      onTouchTap={this.handleReadImgFilesTouchTap}
                     />
                     <span>...</span>
-                    { 0 < files.get('items').size ? (
+                    { imgs.get('path') !== '' ? (
                       <div>
-                        <span>読み込まれたファイル(この並び順で出題されます)</span>
-                        <List>
-                          { files.get('items').map((item, index) => (
-                            <ListItem
-                              key={index}
-                              leftIcon={<PhotoCameraIcon />}
-                              primaryText={item.get('fileName')}
-                            />
-                          )) }
-                        </List>
+                        <span>選択されたフォルダ:</span>
+                        <span>{imgs.get('path')}</span>
                       </div>
                     ) : null}
                   </div>
@@ -195,7 +294,7 @@ export default class Home extends BaseComponent {
                       label="NEXT"
                       primary
                       style={muiStyles.buttonStyle}
-                      disabled={0 === files.get('items').size}
+                      disabled={imgs.get('path') === ''}
                       onTouchTap={this.handleReadFilesCommitTouchTap}
                     />
                     <FlatButton
@@ -209,8 +308,13 @@ export default class Home extends BaseComponent {
             </Step>
           </Stepper>
           { data.get('finished') && (
-            <div className={cssStyles.start_box} >
-              <Link to="/quiz" >START!!</Link>
+            <div className={cssStyles.start_box}>
+              <FlatButton
+                label="START!!"
+                style={muiStyles.buttonStyle}
+                primary
+                onTouchTap={this.handleStartTouchTap}
+              />
               <FlatButton
                 label="RESET"
                 style={muiStyles.buttonStyle}

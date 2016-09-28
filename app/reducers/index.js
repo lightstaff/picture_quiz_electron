@@ -6,13 +6,15 @@ import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 
 import app from './app';
-import files from './files';
+import imgs from './imgs';
+import pdf from './pdf';
 import panels from './panels';
 import errors from './errors';
 
 const rootReducer = combineReducers({
   app,
-  files,
+  imgs,
+  pdf,
   panels,
   errors,
   routing: routerReducer,

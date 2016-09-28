@@ -18,7 +18,7 @@
   {
     const script = document.createElement('script');
     const port = process.env.PORT || 3000;
-    script.src = (process.env.HOT) ? `http://localhost:${port}/dist/bundle.js` : '../dist/bundle.js';
+    script.src = (process.env.HOT) ? `http://localhost:${port}/dist/main.bundle.js` : '../dist/main.bundle.js';
     document.write(script.outerHTML);
   }
 </script>

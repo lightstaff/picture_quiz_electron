@@ -6,7 +6,8 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import * as panelsActions from '../actions/panels';
+import * as appActions from '../actions/app';
+import * as errorsActions from '../actions/errors';
 import App from '../components/App/App.jsx';
 
 const mapStateToProps = state => ({
@@ -15,7 +16,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  panelsActions: bindActionCreators(panelsActions, dispatch),
+  appActions: bindActionCreators(appActions, dispatch),
+  errorsActions: bindActionCreators(errorsActions, dispatch),
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -24,18 +26,13 @@ export default class AppContainer extends Component {
     app: PropTypes.object.isRequired,
     errors: PropTypes.object.isRequired,
     children: PropTypes.node,
-    panelsActions: PropTypes.object.isRequired,
+    appActions: PropTypes.object.isRequired,
+    errorsActions: PropTypes.object.isRequired,
   };
 
   render() {
-    const { app, errors, children, panelsActions } = this.props;
     return (
-      <App
-        app={app}
-        errors={errors}
-        panelsActions={panelsActions}
-        children={children}
-      />
+      <App {...this.props} />
     )
   }
 }

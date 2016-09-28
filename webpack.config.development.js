@@ -14,10 +14,12 @@ export default merge(baseConfig, {
 
   devtool: 'cheap-module-eval-source-map',
 
-  entry: [
-    `webpack-hot-middleware/client?path=http://localhost:${port}/__webpack_hmr`,
-    './app/index'
-  ],
+  entry: {
+    main: [
+      `webpack-hot-middleware/client?path=http://localhost:${port}/__webpack_hmr`,
+      './app/index',
+    ],
+  },
 
   output: {
     publicPath: `http://localhost:${port}/dist/`,

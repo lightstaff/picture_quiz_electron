@@ -7,38 +7,42 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import * as appActions from '../actions/app';
-import * as fetchLocalFilesActions from '../actions/fetchLocalFiles';
+import * as errorsActions from '../actions/errors';
+import * as imgsActions from '../actions/imgs';
+import * as pdfActions from '../actions/pdf';
 import * as panelsActions from '../actions/panels';
 import Home from '../components/Home/Home.jsx';
 
 const mapStateToProps = state => ({
-  files: state.files,
+  app: state.app,
+  pdf: state.pdf,
+  imgs: state.imgs,
 });
 
 const mapDispatchToProps = dispatch => ({
   appActions: bindActionCreators(appActions, dispatch),
-  fetchLocalFilesActions: bindActionCreators(fetchLocalFilesActions, dispatch),
+  errorsActions: bindActionCreators(errorsActions, dispatch),
+  pdfActions: bindActionCreators(pdfActions, dispatch),
+  imgsActions: bindActionCreators(imgsActions, dispatch),
   panelsActions: bindActionCreators(panelsActions, dispatch),
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class HomeContainer extends Component {
   static propTypes = {
-    files: PropTypes.object.isRequired,
+    app: PropTypes.object.isRequired,
+    pdf: PropTypes.object.isRequired,
+    imgs: PropTypes.object.isRequired,
     appActions: PropTypes.object.isRequired,
-    fetchLocalFilesActions: PropTypes.object.isRequired,
+    errorsActions: PropTypes.object.isRequired,
+    pdfActions: PropTypes.object.isRequired,
+    imgsActions: PropTypes.object.isRequired,
     panelsActions: PropTypes.object.isRequired,
   };
 
   render() {
-    const { files, appActions, fetchLocalFilesActions, panelsActions } = this.props;
     return (
-      <Home
-        files={files}
-        appActions={appActions}
-        fetchLocalFilesActions={fetchLocalFilesActions}
-        panelsActions={panelsActions}
-      />
+      <Home {...this.props} />
     )
   }
 }
